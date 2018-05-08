@@ -11,18 +11,4 @@ import { StorybookUI } from "../../storybook"
  */
 const APP_NAME = "NativeTest"
 
-// Should we show storybook instead of our app?
-//
-// ⚠️ Leave this as `false` when checking into git.
-const SHOW_STORYBOOK = false
-
-if (SHOW_STORYBOOK && __DEV__) {
-  // 🎗 REMINDER: Storybook has a server you need to run from a terminal window.
-  //
-  // $> yarn run storybook
-  //
-  AppRegistry.registerComponent(APP_NAME, () => StorybookUI)
-} else {
-  // load our app
-  AppRegistry.registerComponent(APP_NAME, () => RootComponent)
-}
+AppRegistry.registerComponent(APP_NAME, () => RootComponent)

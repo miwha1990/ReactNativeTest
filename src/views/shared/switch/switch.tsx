@@ -91,13 +91,13 @@ export class Switch extends React.PureComponent<SwitchProps, SwitchState> {
         backgroundColor: this.props.value ? ON_COLOR : OFF_COLOR,
         borderColor: this.props.value ? BORDER_ON_COLOR : BORDER_OFF_COLOR,
       },
-      ...this.props.value ? this.props.trackOnStyle : this.props.trackOffStyle,
+      ...(this.props.value ? this.props.trackOnStyle : this.props.trackOffStyle),
     }
 
     const thumbStyle = {
       ...THUMB,
       ...{ transform: [{ translateX }] },
-      ...this.props.value ? this.props.thumbOnStyle : this.props.thumbOffStyle,
+      ...(this.props.value ? this.props.thumbOnStyle : this.props.thumbOffStyle),
     }
 
     return (

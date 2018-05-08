@@ -8,9 +8,7 @@ storiesOf("Header")
   .add("Behavior", () => (
     <Story>
       <UseCase noPad text="default" usage="The default usage">
-        <Header
-          headerTx="secondExampleScreen.howTo"
-        />
+        <Header headerTx="secondExampleScreen.howTo" />
       </UseCase>
       <UseCase noPad text="leftIcon" usage="A left nav icon">
         <Header

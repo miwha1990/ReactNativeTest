@@ -1,9 +1,11 @@
 import { StackNavigator } from "react-navigation"
-import { ExampleNavigator } from "./example-navigator"
+import { GithubUserFollowers } from "../views/github-users/github-user-followers"
+import { GithubUsersList } from "../views/github-users/github-users-list"
 
 export const RootNavigator = StackNavigator(
   {
-    exampleStack: { screen: ExampleNavigator },
+    GithubUsersListNavigator: { screen: GithubUsersList },
+    GithubUserFollowersNavigator: { screen: GithubUserFollowers },
   },
   {
     headerMode: "none",

@@ -1,8 +1,10 @@
 import "../i18n"
 import * as React from "react"
 import { setupRootStore } from "./setup-root-store"
+import { setupUsersStore } from "./setup-users-store"
 import { StatefulNavigator } from "../navigation"
 import { RootStore } from "../models/root-store"
+import { UsersStore } from "../models/github-users-store"
 import { Provider } from "mobx-react"
 import { BackButtonHandler } from "../navigation/back-button-handler"
 import { contains } from "ramda"
@@ -10,6 +12,7 @@ import { DEFAULT_NAVIGATION_CONFIG } from "../navigation/navigation-config"
 
 interface RootComponentState {
   rootStore?: RootStore
+  usersStore: UsersStore
 }
 
 /**
@@ -23,6 +26,7 @@ export class RootComponent extends React.Component<{}, RootComponentState> {
   async componentDidMount() {
     this.setState({
       rootStore: await setupRootStore(),
+      usersStore: await setupUsersStore(),
     })
   }
 
@@ -38,6 +42,7 @@ export class RootComponent extends React.Component<{}, RootComponentState> {
 
   render() {
     const rootStore = this.state && this.state.rootStore
+    const usersStore = this.state && this.state.usersStore
 
     // Before we show the app, we have to wait for out state to be ready.
     // In the meantime, don't render anything. This will be the background
@@ -54,7 +59,9 @@ export class RootComponent extends React.Component<{}, RootComponentState> {
     // otherwise, we're ready to render the app
 
     // --- am: begin list of stores ---
-    const otherStores = {}
+    const otherStores = {
+      ...usersStore,
+    }
     // --- am: end list of stores ---
 
     return (

@@ -11,7 +11,15 @@ import { ButtonProps } from "./button.props"
  */
 export function Button(props: ButtonProps) {
   // grab the props
-  const { preset = "primary", tx, text, style: styleOverride, textStyle: textStyleOverride, children, ...rest } = props
+  const {
+    preset = "primary",
+    tx,
+    text,
+    style: styleOverride,
+    textStyle: textStyleOverride,
+    children,
+    ...rest,
+  } = props
 
   // assemble the style
   const viewPresetToUse = viewPresets[preset] || viewPresets.primary
