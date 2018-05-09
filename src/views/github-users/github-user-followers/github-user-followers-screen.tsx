@@ -115,7 +115,6 @@ export class GithubUserFollowers extends React.Component<RegisterScreenProps, {}
           ListHeaderComponent={ListHeader}
           ListFooterComponent={this.renderFooter}
         />
-        )}
       </Screen>
     )
   }
