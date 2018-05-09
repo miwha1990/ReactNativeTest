@@ -47,13 +47,12 @@ export class Api {
 
   /**
    * Gets a list of users.
-   * @param {number} page
-   * @param {number} per_page
+   * @param {number} since
    * @returns {Promise<GetUsersListResult>}
    */
-  async fetchUsers(page: number = 1, per_page: number = 10): Promise<Types.GetUsersListResult> {
+  async fetchUsers(since: number = 0): Promise<Types.GetUsersListResult> {
     const response: ApiResponse<any> =
-      await this.apisauce.get(`${this.config.url}/users?page=${page}&per_page${per_page}`)
+      await this.apisauce.get(`${this.config.url}/users?since=${since}`)
     // the typical ways to die when calling an api
     if (!response.ok) {
       const problem = getGeneralApiProblem(response)
@@ -61,7 +60,8 @@ export class Api {
     }
 
     try {
-      const resultUsersList: array<Types.User> = response.data.map(({avatar_url, followers_url, html_url, login}) => ({
+      const resultUsersList: array<Types.User> = response.data.map(({avatar_url, followers_url, html_url, login, id}) => ({
+        id,
         avatar_url,
         followers_url,
         html_url,
@@ -76,13 +76,12 @@ export class Api {
   /**
    * Gets a list of followers.
    * @param {string} url
-   * @param {number} page
-   * @param {number} per_page
+   * @param {number} since
    * @returns {Promise<GetUsersListResult>}
    */
-  async fetchFollowers(url: string, page: number = 1, per_page: number = 100): Promise<Types.GetUsersListResult> {
+  async fetchFollowers(url: string, since: number = 0): Promise<Types.GetUsersListResult> {
 
-    const response: ApiResponse<any> = await this.apisauce.get(`${url}?page=${page}&per_page${per_page}`)
+    const response: ApiResponse<any> = await this.apisauce.get(`${url}?since=${since}`)
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response)

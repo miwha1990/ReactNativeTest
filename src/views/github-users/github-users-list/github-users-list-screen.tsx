@@ -17,13 +17,6 @@ export interface GithubUsersList extends NavigationScreenProps<{}> {}
 export class GithubUsersList extends React.Component<GithubUsersList, {}> {
   _keyExtractor = (item, index) => index.toString()
 
-  @observable page = 1
-
-  @action.bound
-  nextPage() {
-    this.page++
-  }
-
   componentDidMount() {
     this.getUsers()
   }
@@ -42,10 +35,9 @@ export class GithubUsersList extends React.Component<GithubUsersList, {}> {
 
   fetchNextPage() {
     const {
-      usersStore: { addUsers },
+      usersStore: { addUsers, users },
     } = this.props
-    this.nextPage()
-    addUsers(this.page)
+    addUsers(users[users.length - 1].id)
   }
 
   renderFooter = () => {

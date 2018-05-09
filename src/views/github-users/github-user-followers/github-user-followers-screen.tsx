@@ -17,13 +17,6 @@ export interface RegisterScreenProps extends NavigationScreenProps<{}> {}
 export class GithubUserFollowers extends React.Component<RegisterScreenProps, {}> {
   _keyExtractor = (item, index) => index.toString()
 
-  @observable page = 1
-
-  @action.bound
-  nextPage() {
-    this.page++
-  }
-
   componentDidMount() {
     this.getUsers()
   }
@@ -35,7 +28,11 @@ export class GithubUserFollowers extends React.Component<RegisterScreenProps, {}
       navigation: { state },
     } = this.props
     if (state && state.params) {
-      fetchFollowers(state.params.user.followers_url)
+      const data = {
+        id: state.params.user.id,
+        url: state.params.user.followers_url,
+      }
+      fetchFollowers(data)
     }
   }
 
@@ -48,14 +45,20 @@ export class GithubUserFollowers extends React.Component<RegisterScreenProps, {}
   }
 
   fetchNextPage() {
-    this.nextPage()
     const {
-      usersStore: { addFollowers },
+      usersStore: { addFollowers, followers },
       navigation: { state },
     } = this.props
+    let lastUserId = 0
     if (state && state.params) {
-      addFollowers(state.params.user.followers_url, this.page)
+      let temp = followers[followers.length - 1].followers
+      lastUserId = temp[temp.length - 1].id
+      addFollowers(state.params.user.followers_url, lastUserId)
     }
+  }
+
+  componentWillUnmount() {
+    this.props.usersStore.cleanFollowersStack()
   }
 
   renderFooter = () => {
@@ -82,6 +85,10 @@ export class GithubUserFollowers extends React.Component<RegisterScreenProps, {}
       usersStore: { followers, isLoading },
       navigation: { state },
     } = this.props
+    let list_data = []
+    if (followers.length) {
+      list_data = followers[followers.length - 1].followers
+    }
     let headerTitle = "User`s followers"
     if (state && state.params) {
       headerTitle = `${state.params.user.login.toUpperCase()}'s followers`
@@ -98,7 +105,7 @@ export class GithubUserFollowers extends React.Component<RegisterScreenProps, {}
           onLeftPress={() => this.handleBackButton()}
         />
         <FlatList
-          data={followers}
+          data={list_data}
           keyExtractor={this._keyExtractor}
           renderItem={({ item, index }) => (
             <UserRow user={item} idx={index} onPress={user => this.handleRowPress(user)} />

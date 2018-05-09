@@ -1,4 +1,4 @@
-import { types, getParent } from "mobx-state-tree"
+import { types } from "mobx-state-tree"
 import {fetchUsers, fetchFollowers} from "../../api"
 
 import {Api} from "../../services/api"
@@ -8,21 +8,24 @@ api.setup()
 
 const User = types.model({
   login: types.string,
+  id: types.number,
   avatar_url: types.string,
   html_url: types.string,
   followers_url: types.string,
 })
-  .views(self => ({
-    get UsersList() {
-      return getParent(self)
-    },
-  }))
+
+const UserFollowers = types.model({
+  followers: types.optional(types.array(User), []),
+  id: types.number,
+})
+const UserArray =  types.optional(types.array(User), [])
+const UserArrayOfObjects=  types.optional(types.array(UserFollowers), [])
 
 const UsersStore = types.model({
-  users: types.optional(types.array(User), []),
+  users: UserArray,
   isLoading: false,
   adding: false,
-  followers: types.optional(types.array(User), []),
+  followers: UserArrayOfObjects,
 })
   .actions((self) => {
     return {
@@ -36,37 +39,41 @@ const UsersStore = types.model({
         self.users = data.users
       },
       nextPageUsers(data) {
-        self.users = [...self.users, ...data.users]
+        self.users.push(...data.users)
       },
-      updateFollowers(data) {debugger
-        self.followers = data.followers
+      cleanFollowersStack() {
+        self.followers.pop()
+      },
+      updateFollowers(id, value) {
+        self.followers.push({id, followers: value.followers})
       },
       nextPageFollowers(data) {
+        const targetArray = self.followers[self.followers.length - 1]
         if(data.length) {
-          self.users = [...self.followers, ...data.followers]
+          targetArray.push(...data.followers)
         }
       },
-      async fetchFollowers (url: string, page: number, per_page: number) {
+      async fetchFollowers (params: {url: string, id: number}) {
         self.markLoading(true)
-        const data = await api.fetchFollowers(url, page, per_page)
-        self.updateFollowers(data)
+        const data = await api.fetchFollowers(params.url)
+        self.updateFollowers(params.id, data)
         self.markLoading(false)
       },
-      async fetchUsers (page: number, per_page: number) {
+      async fetchUsers () {
         self.markLoading(true)
-        const data = await api.fetchUsers(page, per_page)
+        const data = await api.fetchUsers()
         self.updateUsers(data)
         self.markLoading(false)
       },
-      async addUsers (page: number, per_page: number) {
+      async addUsers (since: number) {
         self.markAdding(true)
-        const data = await api.fetchUsers(page, per_page)
+        const data = await api.fetchUsers(since)
         self.nextPageUsers(data)
         self.markAdding(false)
       },
-      async addFollowers (url: string, page: number, per_page: number) {
+      async addFollowers (url: string, since: number) {
         self.markAdding(true)
-        const data = await api.fetchFollowers(url, page, per_page)
+        const data = await api.fetchFollowers(url, since)
         self.nextPageFollowers(data)
         self.markAdding(false)
       },
